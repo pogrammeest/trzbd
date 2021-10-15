@@ -1,7 +1,7 @@
 import os
-import dotenv
+#import dotenv
 
-dotenv.load_dotenv('.env')
+#dotenv.load_dotenv('.env')
 ENCODING = 'utf-8'
-SERVER_ADDRESS = ("127.0.0.1", 1234)
+SERVER_ADDRESS = ("130.193.55.47", 10000)
 #ENCRYPTION_KEY = os.environ['ENCRYPTION_KEY']

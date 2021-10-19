@@ -3,6 +3,7 @@ import asyncio
 from Exceptions import SocketException
 import json
 
+
 class Server(Socket):
 
     def __init__(self):
@@ -27,11 +28,15 @@ class Server(Socket):
     async def listen_socket(self, listened_socket=None):
         while True:
             try:
+                # print(self.users)
                 data = await super(Server, self).listen_socket(listened_socket)
                 await self.send_data(data=data['data'])
             except SocketException as exc:
-                print(exc)
+                print(f"User {listened_socket.getpeername()[0]}:{listened_socket.getpeername()[1]} has disconnected.")
+                self.users.remove(listened_socket)
                 listened_socket.close()
+
+                return
 
     async def accept_socket(self):
         while True:

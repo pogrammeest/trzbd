@@ -12,14 +12,14 @@ class WorkingWithDataBase():
         )
         self.cursor = self.conn.cursor()
 
-    def select_many_rows(self, table, columns='*', key='true', key_value='true'):
-        select_many_rows_command = f"select {columns} from {table} where {key} = '{key_value}' "
+    def select_many_rows(self, table, columns='*', condition=''):
+        select_many_rows_command = f"select {columns} from {table} where {condition}"
         self.cursor.execute(select_many_rows_command)
 
         return self.cursor.fetchall()
 
-    def select_one_row(self, table, columns='*', key='true', key_value='true'):
-        select_one_row_command = f"select {columns} from {table} where {key} = '{key_value}'"
+    def select_one_row(self, table, columns='*', condition=""):
+        select_one_row_command = f"select {columns} from {table} where {condition}"
         self.cursor.execute(select_one_row_command)
 
         return self.cursor.fetchone()
@@ -40,7 +40,16 @@ class WorkingWithDataBase():
                 lovely.add_row(i)
             return (lovely, temp_data)
         except Exception as exc:
+            self.conn.rollback()
             return exc
+
+    def get_table_name(self):
+        get_table_name_command = f"SELECT table_name FROM information_schema.tables  where table_schema='public' ORDER BY table_name;"
+        self.cursor.execute(get_table_name_command)
+        data = []
+        for table in self.cursor.fetchall():
+            data.append(table[0])
+        return data
 
     def update(self, table, set_string="", condition=""):  # UPDATE weather SET temp_lo = temp_lo+1, temp_hi = temp_lo+15, prcp = DEFAULT WHERE city = 'San Francisco' AND date = '2003-07-03'
 
@@ -78,15 +87,16 @@ class WorkingWithDataBase():
 if __name__ == '__main__':
     a = WorkingWithDataBase()
 
-    output, data = a.select_all_rows(columns='*', table='admins_commands')
-    print(output)
-    print(data)
-
-    # a.update(table='admins_commands',
-    #          set_string="id_command = 5, headline = 'output', description = 'output command'",
-    #          condition="id_command = 4 AND headline = 'help'")
-    a.delete(table='admins_commands', condition="headline = 'output'")
-
-    output, data = a.select_all_rows(columns='*', table='admins_commands')
-    print(output)
-    print(data)
+    print(a.get_table_name())
+    # output, data = a.select_all_rows(columns='*', table='admins_commands')
+    # print(output)
+    # print(data)
+    #
+    # # a.update(table='admins_commands',
+    # #          set_string="id_command = 5, headline = 'output', description = 'output command'",
+    # #          condition="id_command = 4 AND headline = 'help'")
+    # a.delete(table='admins_commands', condition="headline = 'output'")
+    #
+    # output, data = a.select_all_rows(columns='*', table='admins_commands')
+    # print(output)
+    # print(data)

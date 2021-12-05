@@ -6,7 +6,10 @@ from Encryption import Encryptor
 from Exceptions import SocketException
 from sys import platform
 import json
+import sys
 import time
+from threading import Thread
+
 
 
 class Client(Socket):
@@ -39,6 +42,38 @@ class Client(Socket):
             exit(0)
         self.socket.setblocking(False)
 
+    def registration(self):
+        sending_data = {
+            'name': '',
+            'email': '',
+            'password': '',
+        }
+        valid_pass = False
+
+
+
+        input()
+
+        print("Начнем регистрацию!\nИмя:")
+
+        sending_data['name']= input()
+        print("\nПочтa:")
+        sending_data['email'] = input()
+        while not valid_pass:
+            print("\nПароль:")
+            sending_data['password'] = input()
+            print("\nповторите пароль:")
+            repeat_pass = input()
+            if sending_data['password'] == repeat_pass:
+                valid_pass = True
+            else:
+                print('Пароли не совподают пожалуйста, повторите попытку!')
+        print("Вы успешно зарегестриравнны!\n")
+        print("\n")
+        print(sending_data)
+        input()
+        return sending_data
+
     async def listen_socket(self, listened_socket):
         while True:
             try:
@@ -51,7 +86,6 @@ class Client(Socket):
                     self.is_working = False
                     break
                 data = data['data']
-
                 if data['root'] == 'server' and 'request' in data:
                     if data['request'] == 'chat':
                         if not self.chat_is_working:
@@ -64,6 +98,8 @@ class Client(Socket):
                         self.messages = "Экран очищен\n"
                     elif data['request'] == 'show_db':
                         self.messages += data['message_text'] + '\n'
+                    elif data['request'] == 'reg':
+                        self.messages = "Экран очищен\n"
                 elif data['root'] == 'server':
                     self.messages += f"$$SERVER MESSAGE$$:{data['message_text']}\n"
                 elif data['root'] == 'user' and self.chat_is_working:
@@ -92,7 +128,7 @@ class Client(Socket):
                 'message_time': f"{datetime.now().hour}:{datetime.now().minute}:{datetime.now().second}"
             }
             if not self.chat_is_working:
-                self.messages += "$$>"+message+"\n"
+                self.messages += "$$>" + message + "\n"
             await super(Client, self).send_data(where=self.socket, data=encrypted_data)
 
     async def main(self):

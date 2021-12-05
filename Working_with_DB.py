@@ -64,13 +64,11 @@ class WorkingWithDataBase():
     def delete(self, table, condition=""):  # DELETE FROM films WHERE kind <> 'Musical';
 
         delete_command = f"DELETE FROM {table} WHERE {condition}"
-        try:
-            self.cursor.execute(delete_command)
-            self.conn.commit()
-        except Exception as e:
-            print('Exception:', e)
+        self.cursor.execute(delete_command)
+        self.conn.commit()
 
-    def insert(self, table, columns, values):
+
+    def insert(self, table='', columns='', values=()):
         insert_command_string = f"insert into {table} ({columns}) values (%s {', %s' * (len(values) - 1)})"
         insert_command = self.cursor.mogrify(insert_command_string, values)
         try:

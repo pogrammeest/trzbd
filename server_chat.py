@@ -52,14 +52,25 @@ class Server(Socket):
                 table, condition = data['message_text'].split()[1], data['message_text'].split()[2]
                 self.db.delete(table, condition)
             except IndexError:
-                sending_data = {'root': 'server', 'message_text': " Пожалуйста, введите /reg [таблица] [условие]"}
+                sending_data = {'root': 'server', 'message_text': " Пожалуйста, введите /db_del [таблица] [условие]"}
             except BaseException as err:
                 sending_data = {'root': 'server', 'message_text': f' Пожалуйста, проверьте запрос! Ошибка:\n{err}'}
                 self.db.conn.rollback()
             else:
                 sending_data = {'root': 'server', 'message_text': f" Запрос на удаление в таблице '{table}' успешно выполнен\n"}
+        elif '/db_update' in data['message_text'] and self.is_admin(listened_socket):
+            try:
+                table, set_string, condition = data['message_text'].split()[1], data['message_text'].split()[2], data['message_text'].split()[3]
+                self.db.update(table, set_string, condition)
+            except IndexError:
+                sending_data = {'root': 'server', 'message_text': " Пожалуйста, введите /db_update [table] ['set_string'] [условие]"}
+            except BaseException as err:
+                sending_data = {'root': 'server', 'message_text': f' Пожалуйста, проверьте запрос! Ошибка:\n{err}'}
+                self.db.conn.rollback()
+            else:
+                sending_data = {'root': 'server', 'message_text': f" Запрос на обновление в таблице '{table}' успешно выполнен!\n"}
         elif '/db' in data['message_text']:
-            sending_data = {'root': 'server', 'message_text': "У вас недостаточно прав! Пожалуйста автаризируйтесь под администратром!"}
+            sending_data = {'root': 'server', 'message_text': "У вас недостаточно прав! Пожалуйста автаризируйтесь под администратором!"}
             if self.is_admin(listened_socket):
                 if not (len(data['message_text'].split()) < 2):
                     try:

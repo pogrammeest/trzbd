@@ -54,12 +54,9 @@ class WorkingWithDataBase():
     def update(self, table, set_string="", condition=""):  # UPDATE weather SET temp_lo = temp_lo+1, temp_hi = temp_lo+15, prcp = DEFAULT WHERE city = 'San Francisco' AND date = '2003-07-03'
 
         update_command = f"UPDATE {table} SET {set_string} WHERE {condition}"
-        try:
-            self.cursor.execute(update_command)
-            self.conn.commit()
-        except Exception as e:
-            print('Exception:', e)
-            self.conn.rollback()
+        self.cursor.execute(update_command)
+        self.conn.commit()
+
 
     def delete(self, table, condition=""):  # DELETE FROM films WHERE kind <> 'Musical';
 
